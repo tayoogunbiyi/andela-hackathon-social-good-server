@@ -35,7 +35,7 @@ router.post('/register', joiValidate(registrationSchema), async (req, res) => {
     newUser.save();
     return res.status(201).json(
       buildResponse(
-        `Registered${messages.SUCCESS_MESSAGE}`,
+        `Registered ${messages.SUCCESS_MESSAGE}`,
         {
           ...newUser.toJSON(),
         },
