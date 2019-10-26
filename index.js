@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const passport = require('passport');
+const items = require('./routes/index')
 
 require('dotenv').config();
 
@@ -31,6 +32,7 @@ require('./models');
 const indexRouter = require('./routes/index');
 
 app.use('/', indexRouter);
+app.use('/items', items )
 
 app.listen(port, () => {
   console.log(`server running on port ${port}`);
