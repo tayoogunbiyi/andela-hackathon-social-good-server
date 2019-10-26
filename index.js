@@ -5,6 +5,9 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const passport = require('passport');
 
+const cors = require('cors');
+
+
 require('dotenv').config();
 
 const { db } = require('./db');
@@ -17,6 +20,9 @@ db.once('open', () => {
 const port = process.env.PORT || 3000;
 
 const app = express();
+
+app.use(cors());
+
 
 app.use(logger('dev'));
 app.use(express.json());
