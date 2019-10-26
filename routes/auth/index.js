@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-console */
 const mongoose = require('mongoose');
 const express = require('express');
@@ -5,6 +6,7 @@ const uuidv4 = require('uuid/v4');
 const { joiValidate } = require('express-joi');
 const passport = require('passport');
 const { registrationSchema, loginSchema } = require('../../validation/validationSchemas');
+const { USER_ACCOUNT_TYPE, ORG_ACCOUNT_TYPE, ORG_FIELDS } = require('../../constants/index');
 
 const { BASE_URL } = process.env;
 const { buildResponse } = require('../../services/responseBuilder');
@@ -12,9 +14,13 @@ const messages = require('../../services/responseMessages');
 
 const User = mongoose.model('User');
 
+const OrgProfile = mongoose.model('OrgProfile');
+
+
 const router = express.Router();
 
 router.post('/register', joiValidate(registrationSchema), async (req, res) => {
+  let orgProfile = null;
   const user = await User.findOne({ email: req.body.email });
   if (user) {
     return res.status(400).json(buildResponse(
@@ -31,8 +37,35 @@ router.post('/register', joiValidate(registrationSchema), async (req, res) => {
     );
   }
   newUser.password = hash;
+
+  const { accountType } = req.body;
+  if (accountType === ORG_ACCOUNT_TYPE) {
+    newUser.userType = 'ORG';
+    orgProfile = new OrgProfile();
+    for (let i = 0; i < ORG_FIELDS.length; i += 1) {
+      const field = ORG_FIELDS[i];
+      if (!req.body[field]) {
+        return res.status(400).json(buildResponse(
+          `${messages.MISSING_FIELD} - Organization's ${field}`,
+          null,
+          false,
+        ));
+      }
+      orgProfile[field] = req.body[field];
+    }
+  } else if (accountType !== ORG_ACCOUNT_TYPE && accountType !== USER_ACCOUNT_TYPE) {
+    return res.status(400).json(buildResponse(
+      `${messages.MISSING_FIELD} - Account Type`,
+      null,
+      false,
+    ));
+  }
   try {
     newUser.save();
+    if (orgProfile) {
+      orgProfile.user_id = newUser;
+      orgProfile.save();
+    }
     return res.status(201).json(
       buildResponse(
         `Registered ${messages.SUCCESS_MESSAGE}`,

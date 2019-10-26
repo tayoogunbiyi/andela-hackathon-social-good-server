@@ -20,6 +20,11 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
+  userType: {
+    type: String,
+    enum: ['ORG', 'USER'],
+    default: 'USER',
+  },
 });
 
 UserSchema.methods.toJSON = function () {
