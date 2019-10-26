@@ -1,8 +1,11 @@
 /* eslint-disable linebreak-style */
 const express = require('express');
 // const itemHandlers = require('../../controllers/requests/request_handler')
-const Item = require('../../models/items/items');
-const  auth = require('../auth/index')
+const mongoose = require('mongoose');
+
+const Item = mongoose.model('Item');
+
+const auth = require('../auth/index');
 
 
 const createItem = async (req, res) => {

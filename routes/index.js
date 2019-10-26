@@ -1,6 +1,6 @@
 const express = require('express');
 const passport = require('passport');
-const item = require('../routes/items/items')
+const item = require('../routes/items/items');
 
 require('../config/passport-config')(passport);
 
@@ -11,7 +11,6 @@ router.get('/', (req, res) => {
 });
 
 router.use('/auth', require('./auth'));
-
 
 
 // router.use('/admin', passport.authenticate('jwt', { session: false }), require('./admin'));
