@@ -10,6 +10,9 @@ const loginSchema = {
 const registrationSchema = {
   ...loginSchema,
   phone: Joi.string().required(),
+  accountType: Joi.string().required(),
+  name: Joi.string(),
+  accountNumber: Joi.string(),
 };
 
 
