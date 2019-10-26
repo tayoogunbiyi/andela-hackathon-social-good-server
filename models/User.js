@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const { Schema } = mongoose;
 
 const UserSchema = new Schema({
-  name: {
+  phone: {
     type: String,
     required: true,
   },
@@ -20,24 +20,11 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
-  active: {
-    type: Boolean,
-    default: false,
-  },
-  confirmationToken: {
-    type: String,
-    unique: true,
-  },
-  role: {
-    type: String,
-    enum: ['ADMIN', 'SUPERADMIN', 'USER'],
-    default: 'USER',
-  },
 });
 
 UserSchema.methods.toJSON = function () {
   const obj = this.toObject();
-  const fieldsToDelete = ['password', '__v ', 'active', 'confirmationToken', 'role'];
+  const fieldsToDelete = ['password', '__v'];
   fieldsToDelete.forEach((field) => {
     delete obj[field];
   });

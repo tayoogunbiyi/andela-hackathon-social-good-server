@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
 const mongoose = require('mongoose');
 const express = require('express');
+const uuidv4 = require('uuid/v4');
 const { joiValidate } = require('express-joi');
 const passport = require('passport');
-const { registrationSchema, loginSchema, resetPasswordSchema } = require('../../validation/validationSchemas');
+const { registrationSchema, loginSchema } = require('../../validation/validationSchemas');
 
 const { BASE_URL } = process.env;
 const { buildResponse } = require('../../services/responseBuilder');
@@ -13,46 +14,39 @@ const User = mongoose.model('User');
 
 const router = express.Router();
 
-// router.post('/register', joiValidate(registrationSchema), async (req, res) => {
-//   const user = await User.findOne({ email: req.body.email });
-//   if (user) {
-//     return res.status(400).json(buildResponse(
-//       messages.EMAIL_NOT_AVAILABLE,
-//     ));
-//   }
-//   const newUser = new User(req.body);
-//   const hash = await User.generateHash(req.body.password);
-//   if (!hash) {
-//     return res.status(500).json(
-//       buildResponse(
-//         messages.SERVER_ERROR,
-//       ),
-//     );
-//   }
-//   newUser.password = hash;
-//   try {
-//     const confirmationToken = uuidv4();
-//     newUser.confirmationToken = confirmationToken;
-//     newUser.save();
-//     sendMail(newUser.email, WELCOME_EMAIL_TEMPLATE_ID,
-//       {
-//         name: newUser.name,
-//         confirmationUrl: `${BASE_URL}/${confirmationToken}`,
-//       });
-//     return res.status(201).json(
-//       buildResponse(
-//         `Registered${messages.SUCCESS_MESSAGE}`,
-//         {
-//           ...newUser.toJSON(),
-//         },
-//         true,
-//       ),
-//     );
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).json(buildResponse(messages.SERVER_ERROR));
-//   }
-// });
+router.post('/register', joiValidate(registrationSchema), async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (user) {
+    return res.status(400).json(buildResponse(
+      messages.EMAIL_NOT_AVAILABLE,
+    ));
+  }
+  const newUser = new User(req.body);
+  const hash = await User.generateHash(req.body.password);
+  if (!hash) {
+    return res.status(500).json(
+      buildResponse(
+        messages.SERVER_ERROR,
+      ),
+    );
+  }
+  newUser.password = hash;
+  try {
+    newUser.save();
+    return res.status(201).json(
+      buildResponse(
+        `Registered${messages.SUCCESS_MESSAGE}`,
+        {
+          ...newUser.toJSON(),
+        },
+        true,
+      ),
+    );
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(buildResponse(messages.SERVER_ERROR));
+  }
+});
 
 router.post('/login', joiValidate(loginSchema), async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
@@ -62,14 +56,6 @@ router.post('/login', joiValidate(loginSchema), async (req, res) => {
     );
     return res.status(401).json(response);
   }
-
-  if (user && !user.active) {
-    const response = buildResponse(
-      messages.ACCOUNT_NOT_VERIFIED,
-    );
-    return res.status(401).json(response);
-  }
-
   const token = await user.generateJWT(req.body.password);
   if (!token) {
     const response = buildResponse(
