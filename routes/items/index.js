@@ -172,22 +172,20 @@ const countItems = async (req, res) => {
 const router = express.Router();
 
 // C
-router.post('/items', createItem);
+router.post('/', createItem);
 
 // R
-router.get('/items/users/:user_id', getUserItems);
-router.get('/items/:id', getItem);
-router.get('/items', getItems);
-router.get('/items/count', countItems);
+router.get('/users/:user_id', getUserItems);
+router.get('/:id', getItem);
+router.get('/', getItems);
+router.get('/count', countItems);
 
 
 // U
-router.put('/items/:id', updateItem);
+router.put('/:id', updateItem);
 
 // D
-router.delete('/items/:id', deleteItem);
-
-router.use('/auth', auth);
+router.delete('/:id', deleteItem);
 
 
 module.exports = router;
