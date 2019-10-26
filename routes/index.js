@@ -6,7 +6,7 @@ require('../config/passport-config')(passport);
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  res.send({ title: 'Express' });
+  res.send({ title: 'Welcome to team  2 !' });
 });
 
 router.use('/auth', require('./auth'));
