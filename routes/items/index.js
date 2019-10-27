@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 
 const Item = mongoose.model('Item');
 
+const passport = require('passport');
+
 const auth = require('../auth/index');
 
 
@@ -175,17 +177,17 @@ const router = express.Router();
 router.post('/', createItem);
 
 // R
-router.get('/users/:user_id', getUserItems);
-router.get('/:id', getItem);
+router.get('/users/:user_id', passport.authenticate('jwt', { session: false }), getUserItems);
+router.get('/:id', passport.authenticate('jwt', { session: false }), getItem);
 router.get('/', getItems);
-router.get('/count', countItems);
+router.get('/count', passport.authenticate('jwt', { session: false }), countItems);
 
 
 // U
-router.put('/:id', updateItem);
+router.put('/:id', passport.authenticate('jwt', { session: false }), updateItem);
 
 // D
-router.delete('/:id', deleteItem);
+router.delete('/:id', passport.authenticate('jwt', { session: false }), deleteItem);
 
 
 module.exports = router;

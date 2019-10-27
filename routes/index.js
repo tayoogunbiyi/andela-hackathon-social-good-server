@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 });
 
 router.use('/auth', require('./auth'));
-router.use('/items', passport.authenticate('jwt', { session: false }), require('./items'));
+router.use('/items', require('./items'));
 
 
 // router.use('/admin', passport.authenticate('jwt', { session: false }), require('./admin'));
